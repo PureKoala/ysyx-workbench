@@ -6,9 +6,12 @@
 
 // See also the EXAMPLE section in the verilator manpage/document.
 module top(
+    input clk,
+    input rst,
     input a,
     input b,
     output f
 );
+   
    assign f = a^b;
 endmodule
