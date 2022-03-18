@@ -3,6 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <memory/vaddr.h>
 
 static int is_batch_mode = false;
 
@@ -37,6 +38,34 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_si(char *args) {
+  uint64_t take=1;
+  if(args !=NULL)
+  	take = (uint64_t) atoi(args);
+  cpu_exec(take);
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  if( strcmp(args,"r")==0 )
+  	isa_reg_display();
+  return 0;
+}
+
+static int cmd_x(char *args) {
+  char* n1 = strtok(args," ");
+  char* n2 = n1+strlen(n1)+1;
+  int n = atoi(n1);
+  vaddr_t addr = strtol(n2,NULL,16);
+  for(; n > 0; n--){
+  	uint64_t res = vaddr_read(addr,8);
+  	printf("%lx\t\t%lx\n",addr,res);
+  	addr = addr+8;
+  }	
+  
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -47,6 +76,9 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "run N instructions", cmd_si},
+  { "info", "print regs or break point", cmd_info},
+  { "x", "scan the mem", cmd_x}
 
   /* TODO: Add more commands */
 
@@ -110,7 +142,10 @@ void sdb_mainloop() {
     int i;
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
-        if (cmd_table[i].handler(args) < 0) { return; }
+        if (cmd_table[i].handler(args) < 0) { 
+        	nemu_state.state=NEMU_QUIT;
+        	return; 
+        }
         break;
       }
     }
