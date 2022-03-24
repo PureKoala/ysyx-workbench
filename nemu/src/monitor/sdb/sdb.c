@@ -9,6 +9,9 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+void wp_display();
+void wp_add(char* n1,uint64_t res);
+void wp_delete(int n);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -42,6 +45,7 @@ static int cmd_si(char *args) {
   uint64_t take=1;
   if(args !=NULL)
   	take = (uint64_t) atoi(args);
+  	
   cpu_exec(take);
   return 0;
 }
@@ -49,6 +53,34 @@ static int cmd_si(char *args) {
 static int cmd_info(char *args) {
   if( strcmp(args,"r")==0 )
   	isa_reg_display();
+  else if( strcmp(args,"w")==0 ){
+  	wp_display();
+  }
+  return 0;
+}
+
+static int cmd_p(char *args) {
+  char* n1 = strtok(args,"\n");
+  bool succ = true;
+  uint64_t res = expr(n1,&succ);
+  printf("Result:\tHex:%lx\tDec:%ld\n",res,res);
+  return 0;
+}
+
+static int cmd_w(char *args) {
+  char* n1 = strtok(args,"\n");
+  bool succ = false;
+  uint64_t res = expr(n1,&succ);
+  if(succ == false)
+  	assert(0);
+  wp_add(n1,res);
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  int n = atoi(args);
+  wp_delete(n);
+  
   return 0;
 }
 
@@ -66,6 +98,7 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+
 static int cmd_help(char *args);
 
 static struct {
@@ -78,7 +111,10 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   { "si", "run N instructions", cmd_si},
   { "info", "print regs or break point", cmd_info},
-  { "x", "scan the mem", cmd_x}
+  { "x", "scan the mem", cmd_x},
+  { "p", "calculate the expr", cmd_p},
+  { "w", "set watch point", cmd_w},
+  { "d", "delete watch point", cmd_d}
 
   /* TODO: Add more commands */
 
@@ -149,6 +185,7 @@ void sdb_mainloop() {
         break;
       }
     }
+    //printf("555555\n");
 
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
