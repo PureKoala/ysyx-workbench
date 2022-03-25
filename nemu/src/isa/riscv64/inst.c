@@ -22,7 +22,7 @@ enum {
 static word_t immI(uint32_t i) { return SEXT(BITS(i, 31, 20), 12); }
 static word_t immU(uint32_t i) { return SEXT(BITS(i, 31, 12), 20) << 12; }
 static word_t immS(uint32_t i) { return (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); }
-static word_t immJ(uint32_t i) { return (SEXT(BITS(i, 31, 31), 1) << 19) | (BITS(i, 20, 12) << 11) | (BITS(i, 19, 19) << 10) | BITS(i, 29, 20); }
+static word_t immJ(uint32_t i) { return (SEXT(BITS(i, 31, 31), 1) << 20) | (BITS(i, 19, 12) << 12) | (BITS(i, 20, 20) << 11) | (BITS(i, 30, 21) << 1); }
 static word_t immJr(uint32_t i) { return (SEXT(BITS(i, 31, 20), 12));  }
 
 static void decode_operand(Decode *s, word_t *dest, word_t *src1, word_t *src2, int type) {
@@ -56,8 +56,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 011 ????? 01000 11", sd     , S, Mw(src1 + dest, 8, src2));
   INSTPAT("?????????? ?????????? ????? 0110111",    lui	   , U, R(dest) = src1 & 0xfffff000);
   INSTPAT("??????? ????? ????? 000 ????? 0010011",  addi   , I, R(dest) = src1 + src2);
-  INSTPAT("?????????? ?????????? ????? 1101111",    jal	   , J, {R(dest) = s->pc + 4 ; s->pc = s->pc + src2; } );
-  INSTPAT("???????????? ????? 000 ????? 1100111",   jalr   , Jr,{R(dest) = s->pc + 4 ; s->pc = ((src1+src2) & 0xfffffffe); } );
+  INSTPAT("?????????? ?????????? ????? 1101111",    jal	   , J, {R(dest) = s->pc + 4 ; s->dnpc = s->pc + src2; } );
+  INSTPAT("???????????? ????? 000 ????? 1100111",   jalr   , Jr,{R(dest) = s->pc + 4 ; s->dnpc = ((src1+src2) & 0xfffffffe); } );
   
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
