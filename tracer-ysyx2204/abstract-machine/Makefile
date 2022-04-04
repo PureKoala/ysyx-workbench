@@ -4,6 +4,7 @@
 html:
 	cat Makefile | sed 's/^\([^#]\)/    \1/g' | markdown_py > Makefile.html
 .PHONY: html
+-include $(NEMU_HOME)/configs/riscv64-am_defconfig
 
 ## 1. Basic Setup and Checks
 
@@ -44,7 +45,7 @@ endif
 endif
 
 ## 2. General Compilation Targets
-CONFIG_TARGET_AM := "y"
+
 ### Create the destination directory (`build/$ARCH`)
 WORK_DIR  = $(shell pwd)
 DST_DIR   = $(WORK_DIR)/build/$(ARCH)
