@@ -44,7 +44,7 @@ endif
 endif
 
 ## 2. General Compilation Targets
-CONFIG_TARGET_AM := y
+CONFIG_TARGET_AM := 'y'
 ### Create the destination directory (`build/$ARCH`)
 WORK_DIR  = $(shell pwd)
 DST_DIR   = $(WORK_DIR)/build/$(ARCH)
