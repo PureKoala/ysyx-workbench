@@ -63,7 +63,7 @@ static int cmd_p(char *args) {
   char* n1 = strtok(args,"\n");
   bool succ = true;
   uint64_t res = expr(n1,&succ);
-  printf("Result:\tHex:%lx\tDec:%ld\n",res,res);
+  printf("Result:\tHex:%016lx\tDec:%ld\n",res,res);
   return 0;
 }
 

@@ -36,6 +36,7 @@ char *strcat(char *dst, const char *src) {
   for(; *src;p++,src++){
     *p = *src;
   }
+  *p = '\0';
   return dst;
 }
 
