@@ -1,10 +1,11 @@
-all:
-	@echo "Write this Makefile by your self."
+build:
+	verilator --cc --trace --exe --build csrc/sim_main.cpp vsrc/top.v
 
-sim:
+sim: build
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo "Write this Makefile by your self."
-	verilator -cc ./vsrc/*.v --trace --exe ./csrc/*.cpp
-	make -j -C ./obj_dir -f Vtop.mk Vtop
+	./obj_dir/Vtop
+
+clean:
+	rm -rf obj_dir/
 
 include ../Makefile
