@@ -4,7 +4,7 @@ all:
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
-	verilator -cc ./vsrc/*.v --trace --exe ./csrc/*.cpp
+	verilator -Wall --assert --coverage --build -j -cc ./vsrc/*.v --trace --exe ./csrc/*.cpp
 	make -j -C ./obj_dir -f VTop.mk Vtop
 
 include ../Makefile
